@@ -48,7 +48,7 @@ class AppProvider with ChangeNotifier {
 
     try {
       print('Loading data from API...');
-      
+
       // Load all data in parallel (including theme)
       final results = await Future.wait([
         ApiService.getTodayPrayerTimes(),
@@ -67,7 +67,8 @@ class AppProvider with ChangeNotifier {
       print('✅ [Provider] Data loaded:');
       print('   PrayerTime: ${_prayerTime?.date ?? "null"}');
       if (_currentHadith != null) {
-        print('   Hadith: ${_currentHadith!.text.substring(0, _currentHadith!.text.length > 30 ? 30 : _currentHadith!.text.length)}...');
+        print(
+            '   Hadith: ${_currentHadith!.text.substring(0, _currentHadith!.text.length > 30 ? 30 : _currentHadith!.text.length)}...');
       } else {
         print('   Hadith: null');
       }
@@ -80,7 +81,7 @@ class AppProvider with ChangeNotifier {
       } else {
         print('   Theme: null (using defaults)');
       }
-      
+
       if (_prayerTime == null) {
         print('⚠️ [Provider] WARNING: PrayerTime is null!');
       }
@@ -105,4 +106,3 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 }
-

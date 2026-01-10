@@ -54,8 +54,29 @@ class _HeaderWidgetState extends State<HeaderWidget> {
     final year = now.year;
     final gregorianDate = '$day $monthNameAr $year م';
 
-    // Format time as HH:MM:SS with English numbers
-    final timeString = DateFormat('HH:mm:ss', 'en_US').format(now);
+    // Format time as 12-hour format with AM/PM in Arabic
+    final hour = now.hour;
+    final minute = now.minute;
+    final second = now.second;
+
+    String period;
+    int displayHour;
+    if (hour == 0) {
+      displayHour = 12;
+      period = 'ص';
+    } else if (hour == 12) {
+      displayHour = 12;
+      period = 'م';
+    } else if (hour < 12) {
+      displayHour = hour;
+      period = 'ص';
+    } else {
+      displayHour = hour - 12;
+      period = 'م';
+    }
+
+    final timeString =
+        '$displayHour:${minute.toString().padLeft(2, '0')}:${second.toString().padLeft(2, '0')} $period';
 
     final provider = Provider.of<AppProvider>(context);
     return Container(
@@ -127,7 +148,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
 
           // Mosque Name
           const Text(
-            'مسجد الديه',
+            ' لجنة المسجد',
             style: TextStyle(
               color: Colors.white,
               fontSize: 30,

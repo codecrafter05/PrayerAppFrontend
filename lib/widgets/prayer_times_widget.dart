@@ -259,7 +259,7 @@ class _PrayerTimesWidgetState extends State<PrayerTimesWidget> {
           ),
           const SizedBox(height: 8),
           Text(
-            time,
+            PrayerUtils.convertTo12Hour(time),
             style: TextStyle(
               color: timeColor,
               fontSize: 40,
