@@ -82,9 +82,7 @@ class AppProvider with ChangeNotifier {
 
   Future<void> loadData() async {
     // تحميل الحديث المحفوظ أولاً لعرضه فوراً قبل تحميل البيانات الجديدة
-    if (_currentHadith == null) {
-      await loadCachedHadith();
-    }
+    await loadCachedHadith();
 
     _isLoading = true;
     notifyListeners();
@@ -106,6 +104,9 @@ class AppProvider with ChangeNotifier {
       if (newHadith != null) {
         _currentHadith = newHadith;
         await _saveHadithToCache(newHadith);
+      } else if (_currentHadith == null) {
+        // إذا فشل تحميل الحديث الجديد ولم يكن هناك حديث محفوظ، نحاول تحميله مرة أخرى
+        await loadCachedHadith();
       }
       _todayOccasions = results[2] as List<Occasion>;
       _occasionImages = results[3] as List<OccasionImage>;
@@ -138,6 +139,12 @@ class AppProvider with ChangeNotifier {
     } catch (e, stackTrace) {
       print('Error loading data: $e');
       print('Stack trace: $stackTrace');
+      
+      // في حالة الخطأ، نتأكد من وجود حديث محفوظ
+      if (_currentHadith == null) {
+        await loadCachedHadith();
+      }
+      
       _isLoading = false;
       notifyListeners();
     }
