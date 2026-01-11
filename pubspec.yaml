@@ -53,6 +53,9 @@ dependencies:
   
   # Google Fonts for beautiful Arabic fonts
   google_fonts: ^6.2.1
+  
+  # Local storage for persisting data
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

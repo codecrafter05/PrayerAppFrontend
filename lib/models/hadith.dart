@@ -13,5 +13,12 @@ class Hadith {
       text: json['text'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'text': text,
+    };
+  }
 }
 

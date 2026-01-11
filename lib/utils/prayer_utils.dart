@@ -128,21 +128,21 @@ class PrayerUtils {
     // Check if current time is within 5 minutes after any prayer time
     // Show notification when prayer time arrives and for 5 minutes after
     final prayerWindowEnd = const Duration(minutes: 5);
-    
+
     // Allow checking within the same minute (for precision)
     final tolerance = const Duration(seconds: -1);
 
-    if (now.isAfter(fajrDateTime.add(tolerance)) && 
+    if (now.isAfter(fajrDateTime.add(tolerance)) &&
         now.isBefore(fajrDateTime.add(prayerWindowEnd))) {
       return 'الفجر';
-    } else if (now.isAfter(sunriseDateTime.add(tolerance)) && 
-               now.isBefore(sunriseDateTime.add(prayerWindowEnd))) {
+    } else if (now.isAfter(sunriseDateTime.add(tolerance)) &&
+        now.isBefore(sunriseDateTime.add(prayerWindowEnd))) {
       return 'الشروق';
-    } else if (now.isAfter(dhuhrDateTime.add(tolerance)) && 
-               now.isBefore(dhuhrDateTime.add(prayerWindowEnd))) {
+    } else if (now.isAfter(dhuhrDateTime.add(tolerance)) &&
+        now.isBefore(dhuhrDateTime.add(prayerWindowEnd))) {
       return 'الظهر';
-    } else if (now.isAfter(maghribDateTime.add(tolerance)) && 
-               now.isBefore(maghribDateTime.add(prayerWindowEnd))) {
+    } else if (now.isAfter(maghribDateTime.add(tolerance)) &&
+        now.isBefore(maghribDateTime.add(prayerWindowEnd))) {
       return 'المغرب';
     }
 

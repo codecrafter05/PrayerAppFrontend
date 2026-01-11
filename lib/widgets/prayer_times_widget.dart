@@ -224,11 +224,14 @@ class _PrayerTimesWidgetState extends State<PrayerTimesWidget> {
     final backgroundColor =
         isNextPrayer ? Colors.white : provider.secondaryBackgroundColor;
     // Use dark green text/icon if background is white, otherwise use gold/white
-    final textColor = isNextPrayer ? provider.secondaryBackgroundColor : Colors.white;
-    final iconColor =
-        isNextPrayer ? provider.secondaryBackgroundColor : const Color(0xFFd4af37);
-    final timeColor =
-        isNextPrayer ? provider.secondaryBackgroundColor : const Color(0xFFd4af37);
+    final textColor =
+        isNextPrayer ? provider.secondaryBackgroundColor : Colors.white;
+    final iconColor = isNextPrayer
+        ? provider.secondaryBackgroundColor
+        : const Color(0xFFd4af37);
+    final timeColor = isNextPrayer
+        ? provider.secondaryBackgroundColor
+        : const Color(0xFFd4af37);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),

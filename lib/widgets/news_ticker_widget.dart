@@ -18,40 +18,21 @@ class NewsTickerWidget extends StatefulWidget {
   State<NewsTickerWidget> createState() => _NewsTickerWidgetState();
 }
 
-class _NewsTickerWidgetState extends State<NewsTickerWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Offset> _animation;
+class _NewsTickerWidgetState extends State<NewsTickerWidget> {
   Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
-      duration: const Duration(seconds: 30),
-      vsync: this,
-    );
-
-    _animation = Tween<Offset>(
-      begin: const Offset(1.0, 0.0),
-      end: const Offset(-1.0, 0.0),
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.linear,
-    ));
-
-    _controller.repeat();
-
-    // Refresh hadith every 2 minutes
-    _refreshTimer = Timer.periodic(const Duration(minutes: 2), (_) {
+    // تحديث الحديث كل 5 دقائق
+    _refreshTimer = Timer.periodic(const Duration(minutes: 5), (_) {
       widget.onRefresh();
     });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     _refreshTimer?.cancel();
     super.dispose();
   }
@@ -64,7 +45,6 @@ class _NewsTickerWidgetState extends State<NewsTickerWidget>
 
     final provider = Provider.of<AppProvider>(context);
     return Container(
-      height: 80,
       decoration: BoxDecoration(
         color: provider.secondaryBackgroundColor,
         boxShadow: [
@@ -75,46 +55,20 @@ class _NewsTickerWidgetState extends State<NewsTickerWidget>
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          SlideTransition(
-            position: _animation,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.format_quote,
-                      color: Color(0xFFd4af37),
-                      size: 30,
-                    ),
-                    const SizedBox(width: 15),
-                    Flexible(
-                      child: Text(
-                        widget.hadith!.text,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.right,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    const Icon(
-                      Icons.format_quote,
-                      color: Color(0xFFd4af37),
-                      size: 30,
-                    ),
-                  ],
-                ),
-              ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+        child: Center(
+          child: Text(
+            widget.hadith!.text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
             ),
+            textAlign: TextAlign.center,
           ),
-        ],
+        ),
       ),
     );
   }
