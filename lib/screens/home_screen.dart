@@ -36,11 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
       provider.loadData();
     });
 
-    // Auto-refresh every 1 minute to check for API updates
+    // Auto-refresh every 1 minute to check for API updates (silent mode - no loading screen)
     _autoRefreshTimer = Timer.periodic(const Duration(minutes: 1), (_) {
       final provider = Provider.of<AppProvider>(context, listen: false);
-      print('🔄 [Auto-Refresh] Checking for updates from API...');
-      provider.loadData();
+      print('🔄 [Auto-Refresh] Checking for updates from API (silent mode)...');
+      provider.loadData(silent: true);
     });
 
     // Check for prayer time every second

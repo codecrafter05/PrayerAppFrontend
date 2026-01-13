@@ -146,7 +146,7 @@ class _PrayerTimesWidgetState extends State<PrayerTimesWidget> {
             'المتبقى على ${_nextPrayer!['name']}',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 28,
+              fontSize: 36,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -158,7 +158,7 @@ class _PrayerTimesWidgetState extends State<PrayerTimesWidget> {
             PrayerUtils.formatRemainingTime(_nextPrayer!['remaining']),
             style: const TextStyle(
               color: Color(0xFFd4af37),
-              fontSize: 40,
+              fontSize: 50,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -191,7 +191,7 @@ class _PrayerTimesWidgetState extends State<PrayerTimesWidget> {
             'مناسبات اليوم',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 28,
+              fontSize: 36,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -205,7 +205,7 @@ class _PrayerTimesWidgetState extends State<PrayerTimesWidget> {
               color: widget.todayOccasions.isNotEmpty
                   ? const Color(0xFFd4af37)
                   : Colors.white70,
-              fontSize: 28,
+              fontSize: 36,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -255,7 +255,7 @@ class _PrayerTimesWidgetState extends State<PrayerTimesWidget> {
             name,
             style: TextStyle(
               color: textColor,
-              fontSize: 28,
+              fontSize: 36,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -265,7 +265,7 @@ class _PrayerTimesWidgetState extends State<PrayerTimesWidget> {
             PrayerUtils.convertTo12Hour(time),
             style: TextStyle(
               color: timeColor,
-              fontSize: 40,
+              fontSize: 50,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,

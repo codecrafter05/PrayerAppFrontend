@@ -80,15 +80,18 @@ class AppProvider with ChangeNotifier {
     }
   }
 
-  Future<void> loadData() async {
+  Future<void> loadData({bool silent = false}) async {
     // تحميل الحديث المحفوظ أولاً لعرضه فوراً قبل تحميل البيانات الجديدة
     await loadCachedHadith();
 
-    _isLoading = true;
-    notifyListeners();
+    // فقط نعرض شاشة التحميل إذا لم يكن silent mode
+    if (!silent) {
+      _isLoading = true;
+      notifyListeners();
+    }
 
     try {
-      print('Loading data from API...');
+      print('Loading data from API... ${silent ? "(silent)" : ""}');
 
       // Load all data in parallel (including theme)
       final results = await Future.wait([
@@ -134,18 +137,24 @@ class AppProvider with ChangeNotifier {
         print('⚠️ [Provider] WARNING: PrayerTime is null!');
       }
 
-      _isLoading = false;
+      // فقط نحدث حالة التحميل إذا لم يكن silent mode
+      if (!silent) {
+        _isLoading = false;
+      }
       notifyListeners();
     } catch (e, stackTrace) {
       print('Error loading data: $e');
       print('Stack trace: $stackTrace');
-      
+
       // في حالة الخطأ، نتأكد من وجود حديث محفوظ
       if (_currentHadith == null) {
         await loadCachedHadith();
       }
-      
-      _isLoading = false;
+
+      // فقط نحدث حالة التحميل إذا لم يكن silent mode
+      if (!silent) {
+        _isLoading = false;
+      }
       notifyListeners();
     }
   }

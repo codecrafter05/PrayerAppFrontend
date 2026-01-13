@@ -80,7 +80,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
 
     final provider = Provider.of<AppProvider>(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 40),
       decoration: BoxDecoration(
         color: provider.secondaryBackgroundColor,
         boxShadow: [
@@ -99,7 +99,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             dayName,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 30,
+              fontSize: 52,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -112,7 +112,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             gregorianDate,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 30,
+              fontSize: 52,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -125,7 +125,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             timeString,
             style: const TextStyle(
               color: Color(0xFFd4af37), // Gold color
-              fontSize: 40,
+              fontSize: 72,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -138,7 +138,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             widget.prayerTime?.hijriDate ?? '',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 30,
+              fontSize: 52,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -151,7 +151,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             ' لجنة المسجد',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 30,
+              fontSize: 52,
               fontWeight: FontWeight.bold,
             ),
           ),
