@@ -1,11 +1,11 @@
 {
-    "name": "tv_app",
-    "short_name": "tv_app",
+    "name": "مسجد الديه",
+    "short_name": "مسجد الديه",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "مسجد الديه - تطبيق أوقات الصلاة والمناسبات",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

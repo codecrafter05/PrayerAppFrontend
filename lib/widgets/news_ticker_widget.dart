@@ -56,13 +56,13 @@ class _NewsTickerWidgetState extends State<NewsTickerWidget> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 40),
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
         child: Center(
           child: Text(
             widget.hadith!.text,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 48,
+              fontSize: 36,
               fontWeight: FontWeight.w500,
               height: 1.5,
             ),
