@@ -31,5 +31,18 @@ class PrayerTime {
       maghrib: json['maghrib'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'date': date,
+      'date_formatted': dateFormatted,
+      'hijri_date': hijriDate,
+      'day_name': dayName,
+      'fajr': fajr,
+      'sunrise': sunrise,
+      'dhuhr': dhuhr,
+      'maghrib': maghrib,
+    };
+  }
 }
 

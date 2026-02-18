@@ -57,6 +57,9 @@ dependencies:
   # Local storage for persisting data
   shared_preferences: ^2.2.2
 
+  # Check internet connectivity (for offline-first strategy)
+  connectivity_plus: ^6.0.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

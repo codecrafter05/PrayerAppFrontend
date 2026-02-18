@@ -16,5 +16,9 @@ class Occasion {
       date: json['date'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'name': name, 'date': date};
+  }
 }
 

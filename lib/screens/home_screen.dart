@@ -20,7 +20,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Timer? _prayerCheckTimer;
-  Timer? _autoRefreshTimer;
   String? _currentPrayer;
   DateTime? _prayerNotificationStartTime;
 
@@ -30,20 +29,13 @@ class _HomeScreenState extends State<HomeScreen> {
     // Set fullscreen mode
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
-    // Load data
+    // تحميل البيانات عند فتح التطبيق (كاش أولاً، ثم من السيرفر إذا في نت)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<AppProvider>(context, listen: false);
       provider.loadData();
     });
 
-    // Auto-refresh every 1 minute to check for API updates (silent mode - no loading screen)
-    _autoRefreshTimer = Timer.periodic(const Duration(minutes: 1), (_) {
-      final provider = Provider.of<AppProvider>(context, listen: false);
-      print('🔄 [Auto-Refresh] Checking for updates from API (silent mode)...');
-      provider.loadData(silent: true);
-    });
-
-    // Check for prayer time every second
+    // التحقق من وقت الصلاة كل ثانية
     _prayerCheckTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       _checkPrayerTime();
     });
@@ -52,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _prayerCheckTimer?.cancel();
-    _autoRefreshTimer?.cancel();
     super.dispose();
   }
 

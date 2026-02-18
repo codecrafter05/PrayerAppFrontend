@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/hadith.dart';
 import '../providers/app_provider.dart';
 
-class NewsTickerWidget extends StatefulWidget {
+class NewsTickerWidget extends StatelessWidget {
   final Hadith? hadith;
   final VoidCallback onRefresh;
 
@@ -15,31 +14,8 @@ class NewsTickerWidget extends StatefulWidget {
   });
 
   @override
-  State<NewsTickerWidget> createState() => _NewsTickerWidgetState();
-}
-
-class _NewsTickerWidgetState extends State<NewsTickerWidget> {
-  Timer? _refreshTimer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // تحديث الحديث كل 5 دقائق
-    _refreshTimer = Timer.periodic(const Duration(minutes: 5), (_) {
-      widget.onRefresh();
-    });
-  }
-
-  @override
-  void dispose() {
-    _refreshTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (widget.hadith == null || widget.hadith!.text.isEmpty) {
+    if (hadith == null || hadith!.text.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -59,7 +35,7 @@ class _NewsTickerWidgetState extends State<NewsTickerWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
         child: Center(
           child: Text(
-            widget.hadith!.text,
+            hadith!.text,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 24,

@@ -16,5 +16,13 @@ class OccasionImage {
       createdAt: json['created_at'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'image_url': imageUrl,
+      'created_at': createdAt,
+    };
+  }
 }
 

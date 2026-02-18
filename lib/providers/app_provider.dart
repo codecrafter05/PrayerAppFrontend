@@ -1,12 +1,12 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/prayer_time.dart';
 import '../models/hadith.dart';
 import '../models/occasion.dart';
 import '../models/occasion_image.dart';
 import '../models/theme.dart' as app_theme;
 import '../services/api_service.dart';
+import '../services/cache_service.dart';
+import '../services/connectivity_service.dart';
 
 class AppProvider with ChangeNotifier {
   PrayerTime? _prayerTime;
@@ -15,8 +15,6 @@ class AppProvider with ChangeNotifier {
   List<OccasionImage> _occasionImages = [];
   app_theme.Theme? _theme;
   bool _isLoading = true;
-
-  static const String _cachedHadithKey = 'cached_hadith';
 
   PrayerTime? get prayerTime => _prayerTime;
   Hadith? get currentHadith => _currentHadith;
@@ -45,55 +43,57 @@ class AppProvider with ChangeNotifier {
     return defaultSecondaryColor;
   }
 
-  // تحميل الحديث المحفوظ من التخزين المحلي
-  Future<void> loadCachedHadith() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final cachedHadithJson = prefs.getString(_cachedHadithKey);
-
-      if (cachedHadithJson != null && cachedHadithJson.isNotEmpty) {
-        final jsonData = json.decode(cachedHadithJson);
-        _currentHadith = Hadith.fromJson(jsonData);
-        print(
-            '✅ [Provider] Loaded cached hadith: ${_currentHadith!.text.substring(0, _currentHadith!.text.length > 30 ? 30 : _currentHadith!.text.length)}...');
-        notifyListeners();
-      }
-    } catch (e) {
-      print('❌ [Provider] Error loading cached hadith: $e');
-    }
+  /// تحميل البيانات المحفوظة من الكاش (للعرض الفوري عند فتح التطبيق)
+  Future<void> _loadFromCache() async {
+    _prayerTime = await CacheService.loadPrayerTime();
+    _currentHadith = await CacheService.loadHadith();
+    _todayOccasions = await CacheService.loadOccasions();
+    _occasionImages = await CacheService.loadOccasionImages();
+    _theme = await CacheService.loadTheme();
   }
 
-  // حفظ الحديث في التخزين المحلي
-  Future<void> _saveHadithToCache(Hadith? hadith) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-
-      if (hadith != null) {
-        final hadithJson = json.encode(hadith.toJson());
-        await prefs.setString(_cachedHadithKey, hadithJson);
-        print('✅ [Provider] Saved hadith to cache');
-      } else {
-        await prefs.remove(_cachedHadithKey);
-      }
-    } catch (e) {
-      print('❌ [Provider] Error saving hadith to cache: $e');
+  /// حفظ البيانات في الكاش بعد جلبها من السيرفر
+  Future<void> _saveToCache() async {
+    if (_prayerTime != null) await CacheService.savePrayerTime(_prayerTime);
+    if (_currentHadith != null) await CacheService.saveHadith(_currentHadith);
+    if (_todayOccasions.isNotEmpty) {
+      await CacheService.saveOccasions(_todayOccasions);
     }
+    if (_occasionImages.isNotEmpty) {
+      await CacheService.saveOccasionImages(_occasionImages);
+    }
+    if (_theme != null) await CacheService.saveTheme(_theme);
   }
 
+  /// استراتيجية العمل: كاش أولاً ثم السيرفر إذا في إنترنت
+  /// - عند فتح التطبيق: نعرض الكاش فوراً، ثم نجلب من السيرفر فقط إذا في نت
+  /// - بدون نت: نستخدم الكاش فقط (لا إعادة تحميل دورية)
   Future<void> loadData({bool silent = false}) async {
-    // تحميل الحديث المحفوظ أولاً لعرضه فوراً قبل تحميل البيانات الجديدة
-    await loadCachedHadith();
+    // 1. تحميل من الكاش أولاً لعرض فوري
+    await _loadFromCache();
+    final hadCachedData = _prayerTime != null;
 
-    // فقط نعرض شاشة التحميل إذا لم يكن silent mode
     if (!silent) {
-      _isLoading = true;
+      _isLoading = !hadCachedData; // إذا فيه كاش لا نعرض شاشة التحميل
+    }
+    notifyListeners();
+
+    // 2. التحقق من النت - إذا ما فيه نت نكمل بالكاش فقط
+    final hasNet = await ConnectivityService.hasInternet;
+    if (!hasNet) {
+      print('📴 [Provider] No internet - using cached data only');
+      if (!silent) _isLoading = false;
       notifyListeners();
+      return;
     }
 
-    try {
-      print('Loading data from API... ${silent ? "(silent)" : ""}');
+    // 3. جلب من السيرفر في الخلفية (فيه نت)
+    if (!silent) _isLoading = true;
+    notifyListeners();
 
-      // Load all data in parallel (including theme)
+    try {
+      print('🌐 [Provider] Fetching fresh data from API...');
+
       final results = await Future.wait([
         ApiService.getTodayPrayerTimes(),
         ApiService.getRandomHadith(),
@@ -106,64 +106,37 @@ class AppProvider with ChangeNotifier {
       final newHadith = results[1] as Hadith?;
       if (newHadith != null) {
         _currentHadith = newHadith;
-        await _saveHadithToCache(newHadith);
       } else if (_currentHadith == null) {
-        // إذا فشل تحميل الحديث الجديد ولم يكن هناك حديث محفوظ، نحاول تحميله مرة أخرى
-        await loadCachedHadith();
+        await _loadFromCache(); // نعيد تحميل الكاش للحديث إذا فشل
       }
       _todayOccasions = results[2] as List<Occasion>;
       _occasionImages = results[3] as List<OccasionImage>;
       _theme = results[4] as app_theme.Theme?;
 
-      print('✅ [Provider] Data loaded:');
-      print('   PrayerTime: ${_prayerTime?.date ?? "null"}');
-      if (_currentHadith != null) {
-        print(
-            '   Hadith: ${_currentHadith!.text.substring(0, _currentHadith!.text.length > 30 ? 30 : _currentHadith!.text.length)}...');
-      } else {
-        print('   Hadith: null');
-      }
-      print('   Occasions: ${_todayOccasions.length}');
-      print('   Images: ${_occasionImages.length}');
-      if (_theme != null) {
-        print('   Theme: ${_theme!.name}');
-        print('   Primary color: ${_theme!.primaryBackgroundColor}');
-        print('   Secondary color: ${_theme!.secondaryBackgroundColor}');
-      } else {
-        print('   Theme: null (using defaults)');
-      }
+      await _saveToCache();
 
-      if (_prayerTime == null) {
-        print('⚠️ [Provider] WARNING: PrayerTime is null!');
-      }
-
-      // فقط نحدث حالة التحميل إذا لم يكن silent mode
-      if (!silent) {
-        _isLoading = false;
-      }
+      print('✅ [Provider] Data loaded from API');
+      if (!silent) _isLoading = false;
       notifyListeners();
     } catch (e, stackTrace) {
-      print('Error loading data: $e');
+      print('❌ [Provider] Error fetching from API: $e');
       print('Stack trace: $stackTrace');
 
-      // في حالة الخطأ، نتأكد من وجود حديث محفوظ
-      if (_currentHadith == null) {
-        await loadCachedHadith();
-      }
+      // عند الفشل نعتمد على الكاش (قد يكون null إذا أول مرة بدون نت)
+      if (_currentHadith == null) await _loadFromCache();
 
-      // فقط نحدث حالة التحميل إذا لم يكن silent mode
-      if (!silent) {
-        _isLoading = false;
-      }
+      if (!silent) _isLoading = false;
       notifyListeners();
     }
   }
 
+  /// تحديث الحديث يدوياً (يُستدعى من زر التحديث في الشريط)
   Future<void> refreshHadith() async {
+    if (!await ConnectivityService.hasInternet) return;
     final newHadith = await ApiService.getRandomHadith();
     if (newHadith != null) {
       _currentHadith = newHadith;
-      await _saveHadithToCache(newHadith);
+      await CacheService.saveHadith(newHadith);
       notifyListeners();
     }
   }
